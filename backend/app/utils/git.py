@@ -27,7 +27,7 @@ async def callback_github(code: str, db: Session):
 
     headers={"Accept":"application/json"}
 
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=30.0) as client:
         response= await client.post(
             "https://github.com/login/oauth/access_token",
             data=params,
@@ -41,14 +41,14 @@ async def callback_github(code: str, db: Session):
             raise HTTPException(status_code=400, detail="Failed to retrieve access token")
     
     data = await process_githubCallback(access_token, db)
-    frontend_url = os.getenv("FRONTEND_URL", "http://localhost:8081")
+    frontend_url = os.getenv("FRONTEND_URL", "http://localhost:8080")
     return RedirectResponse(url=f"{frontend_url}/auth/callback?success=true&user_id={data['user_id']}&name={data['name']}")
 
 async def process_githubCallback(access_token: str, db: Session):
     headers={"Authorization":f"Bearer {access_token}",
              "Accept": "application/vnd.github.v3+json",
             }
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=30.0) as client:
         user_response= await client.get(
             "https://api.github.com/user",
             headers=headers
@@ -119,7 +119,7 @@ async def get_user_repositories(user_id: str, db: Session):
         "Accept": "application/vnd.github.v3+json",
     }
     
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=30.0) as client:
         response = await client.get(
             "https://api.github.com/user/repos",
             headers=headers,

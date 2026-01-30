@@ -81,8 +81,7 @@ def retriver_content (userid:str,query:str,k:int=5):
     security_filter = models.Filter(
         must=[
             models.FieldCondition(
-                key="metadata.user_id", 
-                key="user_id", 
+                key="metadata.user_id",  
                 match=models.MatchValue(value=userid)
             )
         ]
