@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.utils.git import login_github, callback_github, get_user_repositories , get_ascess_token 
+from app.utils.users import get_loaded_repo
 from app.db.postgres import get_db
 from app.code_indexer.loader import load_repo
 from app.code_indexer.embedder import store_embeddings
@@ -21,6 +22,14 @@ async def github_callback(code: str, db: Session = Depends(get_db)):
 async def get_repo(user_id: str, db: Session = Depends(get_db)):
     return await get_user_repositories(user_id, db)  
 
+@router.get("/loaded_repo")
+async def loaded_repo(user_id: str, db: Session = Depends(get_db)):
+    repos = await get_loaded_repo(user_id, db)
+    return {
+        "repositories": repos,
+        "count": len(repos)
+    }
+
 @router.post("/load-repo")
 async def repo_load(user_id:str,repo_url:str,db: Session = Depends(get_db)):
     existing_project = db.query(Project).filter(
@@ -37,7 +46,8 @@ async def repo_load(user_id:str,repo_url:str,db: Session = Depends(get_db)):
         ascess_token = await get_ascess_token(user_id, db)
         chunks = await load_repo(repo_url, ascess_token)
         is_stored = store_embeddings(chunks, user_id, repo_url)
-        
+        if len(chunks) == 0:
+            is_stored = False
         if is_stored:
             repo_name = repo_url.rstrip('/').split('/')[-1]
             project = Project(
@@ -73,3 +83,4 @@ async def repo_load(user_id:str,repo_url:str,db: Session = Depends(get_db)):
         db.add(project)
         db.commit()
         return {"message": f"Error loading repository: {str(e)}", "status": "failed"}
+    
