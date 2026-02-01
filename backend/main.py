@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-from app.api.repo import router
+from app.api.repo import router as repo_router
+from app.api.chat import router as chat_router
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 from app.db.postgres import engine
@@ -15,7 +16,8 @@ CORSMiddleware_settings = {
 }
 app = FastAPI()
 app.add_middleware(CORSMiddleware, **CORSMiddleware_settings)
-app.include_router(router)
+app.include_router(repo_router)
+app.include_router(chat_router)
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}

@@ -2,7 +2,6 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   MessageSquare, 
-  GitCompare, 
   BookOpen, 
   Sparkles,
   ChevronLeft,
@@ -20,7 +19,6 @@ interface AppSidebarProps {
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/chat', label: 'Chat', icon: MessageSquare },
-  { path: '/impact', label: 'Impact Analysis', icon: GitCompare },
   { path: '/onboarding', label: 'Onboarding', icon: BookOpen },
   { path: '/project-generator', label: 'Generator', icon: Sparkles },
 ];

@@ -123,7 +123,6 @@ class Message(Base):
 
     content = Column(Text, nullable=False)
     created_at = Column(DateTime, server_default=func.now())
-
     chat = relationship("Chat", back_populates="messages")
 
 

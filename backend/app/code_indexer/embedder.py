@@ -32,7 +32,7 @@ def create_embeddings(chunks, userid: str, repo_url: str):
         chunk.metadata["user_id"] = userid
         chunk.metadata["repo_url"] = repo_url
     
-    batch_size = 32
+    batch_size = 64
     for i in range(0, len(chunks), batch_size):
         batch_chunks = chunks[i:i + batch_size]
         texts = [chunk.page_content for chunk in batch_chunks]
