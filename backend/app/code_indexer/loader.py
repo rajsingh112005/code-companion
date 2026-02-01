@@ -6,6 +6,7 @@ from langchain_core.documents import Document
 from langchain_community.document_loaders.generic import GenericLoader
 from langchain_community.document_loaders.parsers import LanguageParser
 from langchain_text_splitters import RecursiveCharacterTextSplitter,Language 
+from app.code_indexer.dependencies import process_repository
 from git import Repo
 async def load_repo(repo_url:str , access_token:str):
     clean_url = repo_url.replace("https://", "").replace("http://", "")
@@ -19,13 +20,19 @@ async def load_repo(repo_url:str , access_token:str):
     try:
         await asyncio.to_thread(Repo.clone_from, auth_url, temp_dir)
         print(f"Cloned repository {repo_url} into {temp_dir}")
+        try:
+            print("Building Dependency Graph...")
+            await asyncio.to_thread(process_repository, temp_dir, repo_url)
+            print("Graph built successfully.")
+        except Exception as graph_error:
+            print(f"GRAPH FAILURE (Skipping): {graph_error}")
         loader=GenericLoader.from_filesystem(
             temp_dir,
             glob="**/*",
             suffixes=allowed_suffixes,
             parser=LanguageParser(
                 language=None,
-                parser_threshold=20
+                parser_threshold=0
             )
         )
 

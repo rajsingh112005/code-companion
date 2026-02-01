@@ -5,4 +5,4 @@ load_dotenv()
 llm1=ChatGroq(
     model_name="llama-3.3-70b-versatile"
 )
-print (llm1.predict("What is the capital of France?"))
+

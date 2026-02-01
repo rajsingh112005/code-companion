@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { BookOpen, FileText, AlertTriangle, Lightbulb, Loader2 } from 'lucide-react';
 import { RepoSelector } from '@/components/RepoSelector';
 import { TaskForm } from '@/components/TaskForm';
-import { fetchRepositories, getOnboardingInfo, Repository, OnboardingResponse } from '@/lib/api';
+import { fetchLoadedRepositories, getOnboardingInfo, Repository, OnboardingResponse } from '@/lib/api';
 import { cn } from '@/lib/utils';
 
 export default function Onboarding() {
@@ -22,11 +22,10 @@ export default function Onboarding() {
       return;
     }
     
-    const repos = await fetchRepositories(userId);
+    const repos = await fetchLoadedRepositories(userId);
     setRepositories(repos);
-    const indexedRepo = repos.find(r => r.status === 'indexed');
-    if (indexedRepo) {
-      setSelectedRepo(indexedRepo);
+    if (repos.length > 0) {
+      setSelectedRepo(repos[0]);
     }
   };
 
