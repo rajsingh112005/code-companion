@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Plus, Trash2, RotateCcw, ChevronLeft, ChevronRight, Send } from 'lucide-react';
 import { RepoSelector } from '@/components/RepoSelector';
 import { ChatWindow } from '@/components/ChatWindow';
@@ -26,6 +26,32 @@ export default function Chat() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [userId] = useState(() => localStorage.getItem('user_id') || '');
   const [inputValue, setInputValue] = useState('');
+  const eventSourceRef = useRef<EventSource | null>(null);
+  const streamingMessageIdRef = useRef<string | null>(null);
+  const backendBase = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+
+  const appendToAssistantMessage = useCallback((chunk: string) => {
+    if (!chunk) return;
+
+    setMessages(prev => {
+      let messageId = streamingMessageIdRef.current;
+      if (!messageId) {
+        messageId = `assistant-${Date.now()}`;
+        streamingMessageIdRef.current = messageId;
+        return [...prev, {
+          id: messageId,
+          role: 'assistant',
+          content: chunk,
+          timestamp: new Date().toISOString(),
+        }];
+      }
+
+      return prev.map(msg => msg.id === messageId
+        ? { ...msg, content: `${msg.content}${chunk}` }
+        : msg
+      );
+    });
+  }, []);
 
   const loadRepositories = useCallback(async () => {
     if (!userId) {
@@ -80,6 +106,57 @@ export default function Chat() {
       loadMessages();
     }
   }, [selectedChat, loadMessages]);
+
+  useEffect(() => {
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+      eventSourceRef.current = null;
+    }
+
+    streamingMessageIdRef.current = null;
+    setIsLoading(false);
+
+    if (!selectedChat) return;
+
+    const streamUrl = `${backendBase}/chat/stream/?chat_id=${selectedChat.id}`;
+    const es = new EventSource(streamUrl);
+    eventSourceRef.current = es;
+
+    es.onmessage = (event) => {
+      if (event.data === '[DONE]') {
+        streamingMessageIdRef.current = null;
+        setIsLoading(false);
+        es.close();
+        // Reload messages to get the final saved version
+        loadMessages();
+        return;
+      }
+      
+      if (event.data === '[LOADING]') {
+        setIsLoading(true);
+        return;
+      }
+      
+      if (event.data.startsWith('[ANSWER]')) {
+        const answer = event.data.substring(8); // Remove '[ANSWER]' prefix
+        appendToAssistantMessage(answer);
+        return;
+      }
+      
+      // Fallback for any other streaming data
+      appendToAssistantMessage(event.data);
+    };
+
+    es.onerror = (error) => {
+      console.error('SSE error:', error);
+      setIsLoading(false);
+      es.close();
+    };
+
+    return () => {
+      es.close();
+    };
+  }, [appendToAssistantMessage, backendBase, selectedChat]);
 
   const handleStartNewChat = async () => {
     if (!selectedRepo || !userId) return;
@@ -152,6 +229,7 @@ export default function Chat() {
     
     const messageContent = inputValue.trim();
     setInputValue('');
+    streamingMessageIdRef.current = null;
     
     // Add user message to UI immediately
     const userMessage: ChatMessage = {
@@ -168,10 +246,10 @@ export default function Chat() {
       const result = await sendMessageToChat(selectedChat.id, userId, messageContent);
       if (result.status !== 'success') {
         console.error('Failed to send message:', result.error);
+        setIsLoading(false);
       }
     } catch (error) {
       console.error('Error sending message:', error);
-    } finally {
       setIsLoading(false);
     }
   };

@@ -1,8 +1,10 @@
+import asyncio
 from sqlalchemy.orm import Session
 from app.db.models import Chat, Message, Project
 import uuid
 from datetime import datetime
-
+from app.rag.graph import llm_workflow
+from task_manager import task_manager
 async def create_new_chat(user_id: str, project_id: str, db: Session):
     """Create a new chat for a user and project"""
     try:
@@ -67,6 +69,14 @@ async def send_message(chat_id: str, user_id: str, content: str, db: Session):
         
         if not chat:
             return {"error": "Chat not found or unauthorized", "status": "error"}
+
+        project = db.query(Project).filter(
+            Project.id == chat.project_id
+        ).first()
+        
+        if not project:
+            return {"error": "Project not found", "status": "error"}
+        
         user_message = Message(
             id=uuid.uuid4(),
             chat_id=uuid.UUID(chat_id),
@@ -74,9 +84,17 @@ async def send_message(chat_id: str, user_id: str, content: str, db: Session):
             content=content,
             created_at=datetime.utcnow()
         )
-        
         db.add(user_message)
         db.commit()
+        task = asyncio.create_task(llm_workflow(
+            chat_id=chat_id, 
+            user_id=user_id, 
+            project_id=str(chat.project_id),
+            repo_url=project.repo_url,
+            question=content,
+            db=db
+        ))
+        task_manager.set(chat_id, task)
         
         return {
             "status": "success",
@@ -86,8 +104,7 @@ async def send_message(chat_id: str, user_id: str, content: str, db: Session):
     except Exception as e:
         return {"error": str(e), "status": "error"}
 
-
-async def get_chat_messages(chat_id: str, user_id: str, db: Session):
+async def get_chat_messages(chat_id: str, user_id: str, db: Session, limit: int | None = None):
     """Get all messages in a chat"""
     try:
         chat = db.query(Chat).filter(
@@ -98,9 +115,15 @@ async def get_chat_messages(chat_id: str, user_id: str, db: Session):
         if not chat:
             return {"error": "Chat not found or unauthorized", "status": "error"}
         
-        messages = db.query(Message).filter(
+        query = db.query(Message).filter(
             Message.chat_id == uuid.UUID(chat_id)
-        ).order_by(Message.created_at.asc()).all()
+        )
+
+        if limit and limit > 0:
+            messages = query.order_by(Message.created_at.desc()).limit(limit).all()
+            messages.reverse()
+        else:
+            messages = query.order_by(Message.created_at.asc()).all()
         
         return {
             "status": "success",

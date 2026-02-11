@@ -25,11 +25,12 @@ vector_store=QdrantVectorStore(
     embedding=embedder
 )
 
-def create_embeddings(chunks, userid: str, repo_url: str):
+def create_embeddings(chunks, project_id: str, user_id: str, repo_url: str):
     embeddings = []
     
     for chunk in chunks:
-        chunk.metadata["user_id"] = userid
+        chunk.metadata["project_id"] = project_id
+        chunk.metadata["user_id"] = user_id  
         chunk.metadata["repo_url"] = repo_url
     
     batch_size = 64
@@ -43,8 +44,8 @@ def create_embeddings(chunks, userid: str, repo_url: str):
     return embeddings
 
 
-def store_embeddings(chunks, userid: str, repo_url: str):
-    embeddings = create_embeddings(chunks, userid, repo_url)
+def store_embeddings(chunks, project_id: str, user_id: str, repo_url: str):
+    embeddings = create_embeddings(chunks, project_id, user_id, repo_url)
     all_chunks, all_vectors = zip(*embeddings) if embeddings else ([], [])
     
     if all_chunks:
@@ -76,19 +77,28 @@ def store_embeddings(chunks, userid: str, repo_url: str):
         return True
     return False
 
-def retriver_content (userid:str,query:str,k:int=5):
-
-    security_filter = models.Filter(
-        must=[
-            models.FieldCondition(
-                key="metadata.user_id",  
-                match=models.MatchValue(value=userid)
-            )
-        ]
-    )
-    results=vector_store.similarity_search(
-        query,
-        k=k,
-        filter=security_filter
-    )
-    return results
+def retriver_content(project_id: str, user_id: str, query: str, k: int = 5):
+    try:
+        security_filter = models.Filter(
+            must=[
+                models.FieldCondition(
+                    key="user_id",  
+                    match=models.MatchValue(value=user_id)
+                )
+            ]
+        )
+        results = vector_store.similarity_search(
+            query,
+            k=k,
+            filter=security_filter
+        )
+        if results:
+            print(f"[DEBUG] Retrieved {len(results)} chunks for user_id={user_id}")
+            return results
+        else:
+            print(f"[DEBUG] No chunks found for user_id={user_id}")
+            return []
+    except Exception as e:
+        print(f"[DEBUG] Filter by user_id failed: {e}")
+        return []
+    
