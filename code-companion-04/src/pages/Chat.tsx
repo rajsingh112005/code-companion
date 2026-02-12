@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Plus, Trash2, RotateCcw, ChevronLeft, ChevronRight, Send } from 'lucide-react';
 import { RepoSelector } from '@/components/RepoSelector';
 import { ChatWindow } from '@/components/ChatWindow';
+import { FormattedMessage } from '@/components/FormattedMessage';
 import { 
   fetchLoadedRepositories, 
   createNewChat,
@@ -103,21 +104,24 @@ export default function Chat() {
     if (selectedChat) {
       // Auto-collapse sidebar when chat is selected
       setSidebarCollapsed(true);
+      // Load chat history from DB via REST API (NOT SSE)
       loadMessages();
     }
   }, [selectedChat, loadMessages]);
 
-  useEffect(() => {
+  // START STREAMING (called ONLY when sending a message)
+  const startStreaming = useCallback(() => {
+    if (!selectedChat) return;
+
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
       eventSourceRef.current = null;
     }
 
     streamingMessageIdRef.current = null;
-    setIsLoading(false);
+    setIsLoading(true);
 
-    if (!selectedChat) return;
-
+    // Open SSE ONLY for the new message being sent
     const streamUrl = `${backendBase}/chat/stream/?chat_id=${selectedChat.id}`;
     const es = new EventSource(streamUrl);
     eventSourceRef.current = es;
@@ -127,6 +131,7 @@ export default function Chat() {
         streamingMessageIdRef.current = null;
         setIsLoading(false);
         es.close();
+        eventSourceRef.current = null;
         // Reload messages to get the final saved version
         loadMessages();
         return;
@@ -151,12 +156,19 @@ export default function Chat() {
       console.error('SSE error:', error);
       setIsLoading(false);
       es.close();
+      eventSourceRef.current = null;
     };
+  }, [selectedChat, backendBase, appendToAssistantMessage, loadMessages]);
 
+  // Cleanup SSE on unmount
+  useEffect(() => {
     return () => {
-      es.close();
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
+      }
     };
-  }, [appendToAssistantMessage, backendBase, selectedChat]);
+  }, []);
 
   const handleStartNewChat = async () => {
     if (!selectedRepo || !userId) return;
@@ -240,11 +252,14 @@ export default function Chat() {
     };
     setMessages(prev => [...prev, userMessage]);
     
-    // Send message to backend
+    // Send message to backend and start streaming response
     setIsLoading(true);
     try {
       const result = await sendMessageToChat(selectedChat.id, userId, messageContent);
-      if (result.status !== 'success') {
+      if (result.status === 'success') {
+        // Message sent successfully - now open SSE to stream response
+        startStreaming();
+      } else {
         console.error('Failed to send message:', result.error);
         setIsLoading(false);
       }
@@ -407,13 +422,19 @@ export default function Chat() {
                           className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                         >
                           <div
-                            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                            className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
                               msg.role === 'user'
                                 ? 'bg-primary text-primary-foreground'
-                                : 'bg-muted text-muted-foreground'
+                                : 'bg-muted text-foreground'
                             }`}
                           >
-                            <p className="text-sm">{msg.content}</p>
+                            {msg.role === 'user' ? (
+                              <p className="text-sm">{msg.content}</p>
+                            ) : (
+                              <div className="text-sm prose prose-invert max-w-none">
+                                <FormattedMessage content={msg.content} isAssistant={true} />
+                              </div>
+                            )}
                             <p className="text-xs opacity-70 mt-1">
                               {new Date(msg.timestamp).toLocaleTimeString()}
                             </p>

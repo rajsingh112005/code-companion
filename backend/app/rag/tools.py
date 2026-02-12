@@ -5,7 +5,9 @@ from langchain_core.tools import tool
 from app.db.DGaph import get_db_connection
 
 graph = get_db_connection()
-llm2 = ChatGroq(model_name="llama-3.3-70b-versatile", temperature=0)
+llm2 = ChatGroq(model_name="llama-3.3-70b-versatile", 
+                max_tokens=420,
+                temperature=0.2)
 
 CYPHER_GENERATION_TEMPLATE = """
 Task: Generate a Cypher statement to find dependencies.

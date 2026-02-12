@@ -79,7 +79,26 @@ def store_embeddings(chunks, project_id: str, user_id: str, repo_url: str):
 
 def retriver_content(project_id: str, user_id: str, query: str, k: int = 5):
     try:
-        security_filter = models.Filter(
+        strict_filter = models.Filter(
+            must=[
+                models.FieldCondition(
+                    key="user_id",  
+                    match=models.MatchValue(value=user_id)
+                ),
+                models.FieldCondition(
+                    key="project_id",  
+                    match=models.MatchValue(value=project_id)
+                )
+            ]
+        )
+        results = vector_store.similarity_search(
+            query,
+            k=k,
+            filter=strict_filter
+        )
+        if results:
+            return results
+        user_filter = models.Filter(
             must=[
                 models.FieldCondition(
                     key="user_id",  
@@ -87,18 +106,18 @@ def retriver_content(project_id: str, user_id: str, query: str, k: int = 5):
                 )
             ]
         )
-        results = vector_store.similarity_search(
+        user_results = vector_store.similarity_search(
             query,
             k=k,
-            filter=security_filter
+            filter=user_filter
         )
-        if results:
-            print(f"[DEBUG] Retrieved {len(results)} chunks for user_id={user_id}")
-            return results
-        else:
-            print(f"[DEBUG] No chunks found for user_id={user_id}")
-            return []
+        if user_results:
+             return user_results
+        
+        return []
     except Exception as e:
-        print(f"[DEBUG] Filter by user_id failed: {e}")
+        print(f"[DEBUG] Error retrieving chunks: {e}")
+        import traceback
+        traceback.print_exc()
         return []
     
