@@ -19,8 +19,6 @@ interface AppSidebarProps {
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/chat', label: 'Chat', icon: MessageSquare },
-  { path: '/onboarding', label: 'Onboarding', icon: BookOpen },
-  { path: '/project-generator', label: 'Generator', icon: Sparkles },
 ];
 
 export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {

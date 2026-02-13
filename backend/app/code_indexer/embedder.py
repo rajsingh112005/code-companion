@@ -6,9 +6,11 @@ from qdrant_client.http import models
 from qdrant_client.models import PointStruct
 import uuid
 from dotenv import load_dotenv
+import os
 load_dotenv()
 
-client = QdrantClient(url="http://localhost:6333")
+QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
+client = QdrantClient(url=QDRANT_URL)
 COLLECTION_NAME = "code_companion"
 if not client.collection_exists(collection_name=COLLECTION_NAME):
     client.create_collection(

@@ -10,8 +10,6 @@ import { isAuthenticated } from "@/lib/auth";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import Chat from "./pages/Chat";
-import Onboarding from "./pages/Onboarding";
-import ProjectGenerator from "./pages/ProjectGenerator";
 import NotFound from "./pages/NotFound";
 import AuthCallback from "./pages/AuthCallback";
 
@@ -46,8 +44,6 @@ const App = () => (
           >
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/chat" element={<Chat />} />
-            <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/project-generator" element={<ProjectGenerator />} />
           </Route>
           
           {/* Catch-all */}
