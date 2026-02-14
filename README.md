@@ -1,4 +1,4 @@
-# Code Companion (CodeBrain)
+# Code Companion 
 
 Code Companion is an AI-powered codebase intelligence platform that lets you authenticate with GitHub, index repositories, analyze dependencies, and chat over your code using Retrieval-Augmented Generation (RAG).
 
