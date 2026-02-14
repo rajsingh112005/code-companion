@@ -15,7 +15,6 @@ export default function Dashboard() {
   const username = searchParams.get('name');
 
   useEffect(() => {
-    // Load username from localStorage or URL params
     const storedName = localStorage.getItem('username');
     if (username) {
       localStorage.setItem('username', username);
@@ -47,7 +46,6 @@ export default function Dashboard() {
 
   return (
     <div className="p-6 lg:p-8 max-w-7xl">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">
           Welcome back, {userName.split(' ')[0] || 'Developer'}
@@ -57,7 +55,6 @@ export default function Dashboard() {
         </p>
       </div>
 
-      {/* Quick Actions */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <QuickActionCard 
           icon={MessageSquare} 
@@ -85,7 +82,6 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Repositories List */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">Your Repositories</h2>

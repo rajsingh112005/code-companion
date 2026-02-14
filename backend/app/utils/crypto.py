@@ -30,4 +30,3 @@ def decrypt_token(encrypted_token: str) -> str:
     decrypted = fernet.decrypt(encrypted_token.encode())
     return decrypted.decode()
 
- # Use this to generate a new key for ENCRYPTION_KEY environment variable

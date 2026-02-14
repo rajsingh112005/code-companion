@@ -45,7 +45,6 @@ export default function Onboarding() {
 
   return (
     <div className="p-6 lg:p-8 max-w-5xl">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Onboarding Assistant</h1>
         <p className="text-muted-foreground">
@@ -53,7 +52,6 @@ export default function Onboarding() {
         </p>
       </div>
 
-      {/* Repo Selector */}
       <div className="mb-8">
         <RepoSelector
           repositories={repositories}
@@ -62,7 +60,6 @@ export default function Onboarding() {
         />
       </div>
 
-      {/* Task Form */}
       <div className="mb-8 p-6 rounded-xl bg-card border border-border">
         <TaskForm
           onSubmit={handleSubmit}
@@ -72,7 +69,6 @@ export default function Onboarding() {
         />
       </div>
 
-      {/* Response Panels */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />

@@ -36,7 +36,6 @@
 
     --radius: 0.75rem;
 
-    /* Custom tokens */
     --glow-primary: 0 0 40px hsl(199 89% 48% / 0.3);
     --glow-subtle: 0 0 20px hsl(199 89% 48% / 0.15);
     --gradient-primary: linear-gradient(135deg, hsl(199 89% 48%), hsl(217 91% 60%));
@@ -52,12 +51,10 @@
     --sidebar-border: 222 30% 15%;
     --sidebar-ring: 199 89% 48%;
 
-    /* Status colors */
     --success: 142 76% 45%;
     --warning: 38 92% 50%;
     --info: 199 89% 48%;
 
-    /* Code styling */
     --code-bg: 222 30% 12%;
     --code-text: 199 89% 70%;
   }
@@ -106,7 +103,6 @@
   }
 }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -124,7 +120,6 @@
   @apply bg-muted-foreground/50;
 }
 
-/* Animations */
 @keyframes fade-in {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }

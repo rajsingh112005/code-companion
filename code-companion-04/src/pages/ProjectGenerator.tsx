@@ -22,7 +22,6 @@ export default function ProjectGenerator() {
 
   return (
     <div className="p-6 lg:p-8 max-w-5xl">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Project Generator</h1>
         <p className="text-muted-foreground">
@@ -30,7 +29,6 @@ export default function ProjectGenerator() {
         </p>
       </div>
 
-      {/* Input Form */}
       <div className="mb-8 p-6 rounded-xl bg-card border border-border">
         <TaskForm
           onSubmit={handleSubmit}
@@ -40,7 +38,6 @@ export default function ProjectGenerator() {
         />
       </div>
 
-      {/* Results */}
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-16">
           <Loader2 className="w-12 h-12 animate-spin text-primary mb-4" />
@@ -48,7 +45,6 @@ export default function ProjectGenerator() {
         </div>
       ) : result ? (
         <div className="grid lg:grid-cols-2 gap-6">
-          {/* Tech Stack */}
           <div className="rounded-xl bg-card border border-border overflow-hidden animate-fade-up">
             <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
               <div className="p-2 rounded-lg bg-primary/20 text-primary">
@@ -69,7 +65,6 @@ export default function ProjectGenerator() {
             </div>
           </div>
 
-          {/* Folder Structure */}
           <div className="rounded-xl bg-card border border-border overflow-hidden animate-fade-up" style={{ animationDelay: '100ms' }}>
             <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
               <div className="p-2 rounded-lg bg-info/20 text-info">

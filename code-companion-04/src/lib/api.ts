@@ -46,7 +46,6 @@ export interface ProjectStructure {
   children?: ProjectStructure[];
 }
 
-// API functions
 export async function fetchRepositories(userid: string): Promise<Repository[]> {
   const backendBase = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
   
@@ -102,7 +101,6 @@ export async function fetchLoadedRepositories(userid: string): Promise<Repositor
 export async function loadRepository(userId: string, repoFullName: string): Promise<void> {
   const backendBase = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
   
-  // Convert full_name to repo URL
   const repoUrl = `https://github.com/${repoFullName}`;
   
   const response = await fetch(`${backendBase}/load-repo?user_id=${userId}&repo_url=${encodeURIComponent(repoUrl)}`, {

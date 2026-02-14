@@ -36,7 +36,6 @@ export function ChatWindow({ messages, onSendMessage, isLoading }: ChatWindowPro
 
   return (
     <div className="flex flex-col h-full">
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
         {messages.length === 0 ? (
           <EmptyState />
@@ -53,7 +52,6 @@ export function ChatWindow({ messages, onSendMessage, isLoading }: ChatWindowPro
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
       <div className="p-4 border-t border-border">
         <form onSubmit={handleSubmit} className="relative">
           <textarea
@@ -110,7 +108,6 @@ function MessageBubble({ message, style }: { message: ChatMessage; style?: React
           <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
         </div>
         
-        {/* File references */}
         {message.fileReferences && message.fileReferences.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-2">
             {message.fileReferences.map((file, index) => (

@@ -19,7 +19,6 @@ export function FormattedMessage({ content, isAssistant = false }: FormattedMess
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
-        // Headings
         h1: ({ children }) => (
           <h1 className="text-xl font-bold mt-4 mb-2">{children}</h1>
         ),
@@ -30,12 +29,10 @@ export function FormattedMessage({ content, isAssistant = false }: FormattedMess
           <h3 className="text-base font-bold mt-2 mb-1">{children}</h3>
         ),
         
-        // Paragraphs
         p: ({ children }) => (
           <p className="mb-2 leading-relaxed">{children}</p>
         ),
         
-        // Links
         a: ({ href, children }) => (
           <a
             href={href}
@@ -47,7 +44,6 @@ export function FormattedMessage({ content, isAssistant = false }: FormattedMess
           </a>
         ),
         
-        // Code blocks
         code: ({ inline, className, children }: CodeComponentProps) => {
           if (inline) {
             return (
@@ -61,14 +57,12 @@ export function FormattedMessage({ content, isAssistant = false }: FormattedMess
           );
         },
         
-        // Inline code
         pre: ({ children }) => (
           <div className="bg-slate-800 rounded-lg overflow-hidden my-3">
             {children}
           </div>
         ),
         
-        // Lists
         ul: ({ children }) => (
           <ul className="list-disc list-inside mb-2 ml-2 space-y-1">
             {children}
@@ -83,19 +77,16 @@ export function FormattedMessage({ content, isAssistant = false }: FormattedMess
           <li className="text-sm">{children}</li>
         ),
         
-        // Block quotes
         blockquote: ({ children }) => (
           <blockquote className="border-l-4 border-slate-500 pl-4 italic my-2 text-slate-300">
             {children}
           </blockquote>
         ),
         
-        // Horizontal rule
         hr: () => (
           <hr className="my-4 border-slate-600" />
         ),
         
-        // Tables
         table: ({ children }) => (
           <table className="border-collapse border border-slate-600 my-3 text-sm">
             {children}

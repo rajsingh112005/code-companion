@@ -44,12 +44,10 @@ export async function getCurrentUser(): Promise<User | null> {
   return null;
 }
 
-// Get stored user ID
 export function getUserId(): string | null {
   return localStorage.getItem('user_id');
 }
 
-// Start GitHub OAuth by redirecting to the backend initiator endpoint
 export function initiateGitHubOAuth(): void {
   const backendBase = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
   const url = `${backendBase}/login/github`;

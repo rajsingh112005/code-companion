@@ -36,7 +36,6 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
         collapsed ? "w-16" : "w-60"
       )}
     >
-      {/* Logo */}
       <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border">
         {!collapsed && (
           <div className="flex items-center gap-2">
@@ -56,7 +55,6 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
         </Button>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 py-4">
         <ul className="space-y-1 px-2">
           {navItems.map((item) => {
@@ -81,7 +79,6 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
         </ul>
       </nav>
 
-      {/* Bottom section */}
       <div className="p-2 border-t border-sidebar-border">
         <button
           onClick={handleLogout}

@@ -9,7 +9,6 @@ interface GraphViewerProps {
 export function GraphViewer({ className }: GraphViewerProps) {
   return (
     <div className={cn("relative rounded-xl border border-border bg-card overflow-hidden", className)}>
-      {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border">
         <div className="flex items-center gap-2">
           <GitFork className="w-4 h-4 text-primary" />

@@ -45,7 +45,6 @@ async def repo_load(user_id:str,repo_url:str,db: Session = Depends(get_db)):
     try:
         ascess_token = await get_ascess_token(user_id, db)
         chunks = await load_repo(repo_url, ascess_token)
-        # Generate project_id for new project before storing embeddings
         project_id = str(uuid.uuid4()) if not existing_project else str(existing_project.id)
         is_stored = store_embeddings(chunks, project_id, user_id, repo_url)
         if len(chunks) == 0:

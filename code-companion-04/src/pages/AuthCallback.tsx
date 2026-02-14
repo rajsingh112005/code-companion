@@ -14,10 +14,8 @@ export default function AuthCallback() {
       const username=params.get('name');
       if (success === 'true') {
         setStatus('success');
-        // Mark as logged in
         login();
         
-        // Redirect to dashboard with user_id in URL
         setTimeout(() => navigate(`/dashboard?user_id=${userid}&name=${username}`), 1500);
       } else {
         setStatus('error');

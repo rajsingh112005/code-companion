@@ -39,13 +39,10 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
       <header className="relative overflow-hidden">
-        {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl" />
         
-        {/* Navigation */}
         <nav className="relative z-10 flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-glow">
@@ -59,7 +56,6 @@ export default function LandingPage() {
           </Button>
         </nav>
 
-        {/* Hero content */}
         <div className="relative z-10 px-6 pt-20 pb-32 max-w-7xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border mb-8 animate-fade-up">
             <Zap className="w-4 h-4 text-primary" />
@@ -90,7 +86,6 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* Features Section */}
       <section className="px-6 py-24 max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -121,7 +116,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="px-6 py-24">
         <div className="max-w-4xl mx-auto text-center p-12 rounded-3xl bg-gradient-to-br from-primary/20 via-card to-card border border-border">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -138,7 +132,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="px-6 py-8 border-t border-border">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">

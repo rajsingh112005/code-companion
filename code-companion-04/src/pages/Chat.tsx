@@ -62,7 +62,6 @@ export default function Chat() {
     
     const repos = await fetchLoadedRepositories(userId);
     setRepositories(repos);
-    // Auto-select first loaded repo
     if (repos.length > 0) {
       setSelectedRepo(repos[0]);
     }
@@ -74,7 +73,6 @@ export default function Chat() {
     const chatList = await getUserChats(userId, selectedRepo.id);
     setChats(chatList);
     
-    // Auto-select first chat if available
     if (chatList.length > 0) {
       setSelectedChat(chatList[0]);
     } else {
@@ -102,14 +100,11 @@ export default function Chat() {
 
   useEffect(() => {
     if (selectedChat) {
-      // Auto-collapse sidebar when chat is selected
       setSidebarCollapsed(true);
-      // Load chat history from DB via REST API (NOT SSE)
       loadMessages();
     }
   }, [selectedChat, loadMessages]);
 
-  // START STREAMING (called ONLY when sending a message)
   const startStreaming = useCallback(() => {
     if (!selectedChat) return;
 
@@ -121,7 +116,6 @@ export default function Chat() {
     streamingMessageIdRef.current = null;
     setIsLoading(true);
 
-    // Open SSE ONLY for the new message being sent
     const streamUrl = `${backendBase}/chat/stream/?chat_id=${selectedChat.id}`;
     const es = new EventSource(streamUrl);
     eventSourceRef.current = es;
@@ -132,7 +126,6 @@ export default function Chat() {
         setIsLoading(false);
         es.close();
         eventSourceRef.current = null;
-        // Reload messages to get the final saved version
         loadMessages();
         return;
       }
@@ -148,7 +141,6 @@ export default function Chat() {
         return;
       }
       
-      // Fallback for any other streaming data
       appendToAssistantMessage(event.data);
     };
 
@@ -160,7 +152,6 @@ export default function Chat() {
     };
   }, [selectedChat, backendBase, appendToAssistantMessage, loadMessages]);
 
-  // Cleanup SSE on unmount
   useEffect(() => {
     return () => {
       if (eventSourceRef.current) {
@@ -177,7 +168,6 @@ export default function Chat() {
     try {
       const result = await createNewChat(userId, selectedRepo.id);
       if (result.status === 'success' && result.chat_id) {
-        // Reload chats to get the new one
         await loadChats();
       }
     } catch (error) {
@@ -243,7 +233,6 @@ export default function Chat() {
     setInputValue('');
     streamingMessageIdRef.current = null;
     
-    // Add user message to UI immediately
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       role: 'user',
@@ -252,12 +241,10 @@ export default function Chat() {
     };
     setMessages(prev => [...prev, userMessage]);
     
-    // Send message to backend and start streaming response
     setIsLoading(true);
     try {
       const result = await sendMessageToChat(selectedChat.id, userId, messageContent);
       if (result.status === 'success') {
-        // Message sent successfully - now open SSE to stream response
         startStreaming();
       } else {
         console.error('Failed to send message:', result.error);
@@ -271,7 +258,6 @@ export default function Chat() {
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-border bg-card">
         <div>
           <h1 className="text-xl font-semibold">Chat with Your Code</h1>
@@ -286,12 +272,9 @@ export default function Chat() {
         />
       </header>
 
-      {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar - Chat List */}
         {selectedRepo && (
           <>
-            {/* Sidebar */}
             <div
               className={`border-r border-border flex flex-col bg-card transition-all duration-300 overflow-hidden ${
                 sidebarCollapsed ? 'w-0' : 'w-64'
@@ -355,7 +338,6 @@ export default function Chat() {
               </div>
             </div>
 
-            {/* Sidebar Toggle Button */}
             <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
               className="px-2 border-r border-border bg-card hover:bg-accent transition-colors flex-shrink-0"
@@ -370,12 +352,10 @@ export default function Chat() {
           </>
         )}
 
-        {/* Chat Area */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {selectedRepo ? (
             selectedChat ? (
               <>
-                {/* Chat Header with Actions */}
                 <div className="flex items-center justify-between px-6 py-3 border-b border-border bg-card">
                   <div className="flex-1">
                     <h2 className="font-semibold text-sm">
@@ -406,7 +386,6 @@ export default function Chat() {
                   </div>
                 </div>
 
-                {/* Messages */}
                 <div className="flex-1 flex flex-col overflow-hidden">
                   <div className="flex-1 overflow-y-auto p-6 space-y-4">
                     {messages.length === 0 ? (
@@ -444,7 +423,6 @@ export default function Chat() {
                     )}
                   </div>
 
-                  {/* Input Area */}
                   <div className="border-t border-border p-4 bg-card">
                     <form onSubmit={handleSendMessage} className="flex gap-2">
                       <input
