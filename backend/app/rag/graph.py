@@ -71,8 +71,6 @@ async def llm_workflow(chat_id: str, user_id: str, project_id: str, repo_url: st
         }
         workflow = graph.compile()
         result = await workflow.ainvoke(initial_state)
-        
-        # assistant_message is already called in the workflow
         answer = result.get("answer", "")
         if answer:
             await queue.put(f"[ANSWER]{answer}")

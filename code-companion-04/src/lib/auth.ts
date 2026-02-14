@@ -1,5 +1,3 @@
-// Mock authentication utilities
-
 export interface User {
   id: string;
   name: string;
@@ -7,14 +5,6 @@ export interface User {
   avatar: string;
   githubUsername: string;
 }
-
-export const mockUser: User = {
-  id: '1',
-  name: 'Alex Developer',
-  email: 'alex@example.com',
-  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex',
-  githubUsername: 'alexdev',
-};
 
 export function isAuthenticated(): boolean {
   return localStorage.getItem('isAuthenticated') === 'true';
